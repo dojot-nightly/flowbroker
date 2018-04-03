@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="device out">
+<script type="text/x-red" data-template-name="actuate">
    <div class="form-row">
        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
        <input type="text" id="node-input-name">
@@ -20,12 +20,12 @@
    </div>
 </script>
 
-<script type="text/x-red" data-help-name="device out">
+<script type="text/x-red" data-help-name="actuate">
    <p>Set the value of a virtual device, based on the results of the previous operations on the flow.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('device out', {
+    RED.nodes.registerType('actuate', {
         category: 'output',      // the palette category
         defaults: {              // defines the editable properties of the node
             name: { value: "", required: false },
