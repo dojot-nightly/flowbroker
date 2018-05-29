@@ -6,12 +6,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 var authChecker = require('./auth');
-var FlowManagerBuilder = require('./flowManager').FlowManagerBuilder;
 var FlowError = require('./flowManager').FlowError;
 
 var NodeAPI = require('./node-red/src/index');
 
 var nodeManager = require('./nodeManager').Manager;
+
+var InvalidFlowError = require('./flowManager').InvalidFlowError;
 
 // initialized by init()
 var FlowManager;
@@ -29,8 +30,9 @@ nodeHandler.registerExpress(app);
 
 function validateMandatoryFields(body, fields) {
   for (let f of fields) {
-    if (!body.hasOwnProperty(f))
+    if (!body.hasOwnProperty(f)) {
       return "Missing mandatory field: " + f;
+    }
   }
 }
 
@@ -53,24 +55,25 @@ app.post('/v1/node', (req, res) => {
       return res.status(400).send({message: error.message});
     }
     return res.status(500).send({message: 'Failed to add node: ' + error.message});
-  })
-})
+  });
+});
 
 app.delete('/v1/node/:id', (req, res) => {
   nodeManager.delRemote(undefined, req.params.id).then(() => {
     return res.status(200).send({message: 'ok'});
   }).catch((error) => {
     return res.status(500).send({message: 'Failed ot remove node.', error: error.message});
-  })
-})
+  });
+});
 
 app.get('/v1/flow', (req, res) => {
   let fm = null;
   try {
     fm = FlowManager.get(req.service);
   } catch (e) {
-    if (e instanceof FlowError)
+    if (e instanceof FlowError) {
       return res.status(e.httpStatus).send(e.payload());
+    }
 
     console.error(e);
     return res.status(500).send({"message": "Failed to switch tenancy context"});
@@ -93,8 +96,9 @@ app.post('/v1/flow', (req, res) => {
   try {
     fm = FlowManager.get(req.service);
   } catch (e) {
-    if (e instanceof FlowError)
+    if (e instanceof FlowError) {
       return res.status(e.httpStatus).send(e.payload());
+    }
 
     console.error(e);
     return res.status(500).send({"message": "Failed to switch tenancy context"});
@@ -126,8 +130,9 @@ app.delete('/v1/flow', (req, res) => {
   try {
     fm = FlowManager.get(req.service);
   } catch (e) {
-    if (e instanceof FlowError)
+    if (e instanceof FlowError) {
       return res.status(e.httpStatus).send(e.payload());
+    }
 
     console.error(e);
     return res.status(500).send({"message": "Failed to switch tenancy context"});
@@ -146,8 +151,9 @@ app.get('/v1/flow/:id', (req, res) => {
   try {
     fm = FlowManager.get(req.service);
   } catch (e) {
-    if (e instanceof FlowError)
+    if (e instanceof FlowError) {
       return res.status(e.httpStatus).send(e.payload());
+    }
 
     console.error(e);
     return res.status(500).send({"message": "Failed to switch tenancy context"});
@@ -173,8 +179,9 @@ app.put('/v1/flow/:id', (req, res) => {
   try {
     fm = FlowManager.get(req.service);
   } catch (e) {
-    if (e instanceof FlowError)
+    if (e instanceof FlowError) {
       return res.status(e.httpStatus).send(e.payload());
+    }
 
     console.error(e);
     return res.status(500).send({"message": "Failed to switch tenancy context"});
@@ -200,8 +207,9 @@ app.delete('/v1/flow/:id', (req, res) => {
   try {
     fm = FlowManager.get(req.service);
   } catch (e) {
-    if (e instanceof FlowError)
+    if (e instanceof FlowError) {
       return res.status(e.httpStatus).send(e.payload());
+    }
 
     console.error(e);
     return res.status(500).send({"message": "Failed to switch tenancy context"});
@@ -225,6 +233,6 @@ app.delete('/v1/flow/:id', (req, res) => {
 module.exports = {
   init: (flowManager) => {
     FlowManager = flowManager;
-    app.listen(80, () => {console.log('[api] Service listening on port 80')});
+    app.listen(80, () => {console.log('[api] Service listening on port 80');});
   }
-}
+};
